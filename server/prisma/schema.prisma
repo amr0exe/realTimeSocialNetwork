@@ -1,0 +1,132 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+	id			    Int			@id	@default(autoincrement())
+	username	    String		@unique
+    email           String		@unique
+    password        String
+    bio             String?
+
+    followerCount   Int         @default(0)
+    followingCount  Int         @default(0)
+
+    // relations
+    posts           Post[]
+
+    likes           Like[]
+    dislikes        Dislike[]
+    comments        Comment[]
+
+    followers       Follower[]  @relation("Follower")
+    following       Follower[]  @relation("Following")
+
+    createdAt       DateTime    @default(now())
+    updatedAt       DateTime    @updatedAt
+
+    @@index([username])
+    @@index([email])
+}
+
+model Post {
+    id              Int       @id @default(autoincrement())
+    content         String
+    imageURL        String?
+
+    // likes / dislikes
+    likeCount       Int       @default(0)
+    dislikeCount    Int       @default(0)
+
+    // relations
+    authorId        Int
+    author          User      @relation(fields: [authorId], references: [id])
+    likes           Like[]
+    dislikes        Dislike[]
+    comments        Comment[]
+
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+
+    @@index([authorId])
+}
+
+model Like {
+    id              Int       @id @default(autoincrement())
+    createdAt       DateTime  @default(now())
+
+    // relations
+    authorId        Int
+    postId          Int
+    author          User      @relation(fields: [authorId], references: [id])
+    post            Post      @relation(fields: [postId], references: [id])
+
+    // prevents duplicate likes
+    @@unique([authorId, postId])
+
+    @@index([authorId])
+    @@index([postId])
+}
+
+model Dislike {
+    id              Int       @id @default(autoincrement())
+    createdAt       DateTime  @default(now())
+
+    // relations
+    authorId        Int
+    postId          Int
+    author          User      @relation(fields: [authorId], references: [id])   
+    post            Post      @relation(fields: [postId], references: [id])
+
+    // prevents duplicate dislikes
+    @@unique([authorId, postId])
+
+    @@index([authorId])
+    @@index([postId])
+}
+
+model Comment {
+    id              Int       @id @default(autoincrement())
+    content         String
+
+    // relations
+    authorId        Int
+    postId          Int
+    author          User      @relation(fields: [authorId], references: [id]) 
+    post            Post      @relation(fields: [postId], references: [id])
+
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+
+    @@index([authorId])
+    @@index([postId])
+}
+
+model Follower {
+    id              Int      @id @default(autoincrement())    
+    createdAt       DateTime @default(now())
+
+    // relations
+    followerId      Int
+    followingId     Int
+    follower        User     @relation("Follower", fields: [followerId], references: [id])
+    following       User     @relation("Following", fields: [followingId], references: [id])
+
+    // prevent duplicate followers
+    @@unique([followerId, followingId])
+
+    @@index([followerId])
+    @@index([followingId])
+}
+
