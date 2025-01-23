@@ -15,7 +15,7 @@ app.use(express.json())
 
 app.use("/api/user", userRouter)
 app.use("/api/post", authMiddleware, postRouter)
-app.use("/api/user/:followingId", authMiddleware, followRouter)
+app.use("/api/connect", authMiddleware, followRouter)
 
 
 // TODO: test-router

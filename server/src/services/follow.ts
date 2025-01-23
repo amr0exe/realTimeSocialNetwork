@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 const followRouter: Router = express.Router()
 const prisma = new PrismaClient()
 
-followRouter.put("/follow", async (req: Request, res: Response) => {
+followRouter.put("/follow/:followingId", async (req: Request, res: Response) => {
     const followingId = Number(req.params.followingId)
     const followerId = Number(req.userId)
 
@@ -58,7 +58,7 @@ followRouter.put("/follow", async (req: Request, res: Response) => {
     }
 })
 
-followRouter.put("/unfollow", async (req: Request, res: Response) => {
+followRouter.put("/unfollow/:followingId", async (req: Request, res: Response) => {
     const followingId = Number(req.params.followingId)
     const followerId = Number(req.userId)
 

@@ -53,6 +53,7 @@ postRouter.post("/", async (req: Request, res: Response) => {
 })
 
 // GetAllPost
+// these are for testing purposes only
 // FIXME: create better posts fetching endpoint
 postRouter.get("/all", async (req: Request, res: Response) => {
     try {
@@ -75,6 +76,7 @@ postRouter.get("/all", async (req: Request, res: Response) => {
 
         res.json({
             status: "success",
+            message: "single post fetched",
             data: {
                 posts
             }
@@ -83,6 +85,45 @@ postRouter.get("/all", async (req: Request, res: Response) => {
         res.status(500).json({
             status: "error",
             message: "Failed to fetch posts"
+        })
+        return
+    }
+})
+
+// get-single-post
+postRouter.get("/:postId", async (req: Request, res: Response) => {
+    const postId = Number(req.params.postId)
+
+    try {
+        const singlePost = await prisma.post.findFirst({
+            where: { id: postId },
+            select: { 
+                id: true,
+                content: true,
+                authorId: true,
+                likeCount: true,
+                dislikeCount: true,
+                comments: {
+                    select: {
+                        id: true, 
+                        content: true,
+                        authorId: true
+                        }
+                }
+            }
+        })
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                post: singlePost
+            }
+        })
+
+    } catch(err) {
+        res.status(500).json({
+            status: "error",
+            message: "Failed to fetch post"
         })
         return
     }
