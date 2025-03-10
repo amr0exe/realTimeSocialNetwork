@@ -62,6 +62,11 @@ postRouter.get("/all", async (req: Request, res: Response) => {
                 id: true,
                 content: true,
                 authorId: true,
+				author: {
+					select: {
+						username: true,
+					}
+				},
                 likeCount: true,
                 dislikeCount: true,
                 comments: {
@@ -76,7 +81,7 @@ postRouter.get("/all", async (req: Request, res: Response) => {
 
         res.json({
             status: "success",
-            message: "single post fetched",
+            message: "All posts fetched",
             data: {
                 posts
             }
@@ -93,10 +98,11 @@ postRouter.get("/all", async (req: Request, res: Response) => {
 // get-single-post
 postRouter.get("/:postId", async (req: Request, res: Response) => {
     const postId = Number(req.params.postId)
+    const authorId = Number(req.userId)
 
     try {
         const singlePost = await prisma.post.findFirst({
-            where: { id: postId },
+            where: { id: postId, authorId },
             select: { 
                 id: true,
                 content: true,

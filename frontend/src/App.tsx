@@ -1,41 +1,25 @@
-import { useState } from "react"
-import Sidebar from "./components/local/Sidebar"
-import Home from "./components/local/Home"
-import Messages from "./components/local/Messages"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 
-function App() {
-    const [activeTab, setActiveTab] = useState('home')
+import Dashboard from "./pages/Dashboard"
+import Register from "./pages/Register"
+import Login from "./pages/Login"
 
-    const renderContent = () => {
-        switch(activeTab) {
-            case 'home':
-                return <Home />
-            case 'messages':
-                return <Messages />
-            case 'more':
-                console.log("more here")
-                break
-            default:
-                return <Home />
-        }
-    }   
+function app() {
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="flex h-screen font-mono">
-                <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} /> 
+		<div>
 
-                <main className="flex-1 border-x border-gray-200 bg-white">
-                    {renderContent()}
-                </main>
 
-                <aside className="w-80 p-4 space-y-6">
-                    <p>Hello there</p>
-                    <p>Sidebar</p>
-                </aside>
-            </div>
-        </div>
+			<BrowserRouter>
+				<Routes>
+					<Route path="/register" element={<Register />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/" element={<Dashboard />} />
+				</Routes>
+			</BrowserRouter>
+
+		</div>
     )
 }
 
-export default App
+export default app
